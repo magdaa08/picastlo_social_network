@@ -20,7 +20,6 @@ data class Post (
 
     val visibility: String,
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    val user: User
+    @Column(name = "user_id")
+    val userId: Long
 )

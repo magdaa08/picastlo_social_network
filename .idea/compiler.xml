@@ -10,6 +10,7 @@
         <module name="group-service" />
         <module name="post-service" />
         <module name="user-service" />
+        <module name="registry-service" />
       </profile>
     </annotationProcessing>
   </component>
@@ -18,6 +19,7 @@
       <module name="api-gateway" options="-parameters" />
       <module name="group-service" options="-parameters" />
       <module name="post-service" options="-parameters" />
+      <module name="registry-service" options="-parameters" />
       <module name="user-service" options="-parameters" />
     </option>
   </component>

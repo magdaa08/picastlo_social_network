@@ -9,11 +9,11 @@ data class Group(
     val id: Long? = null,
     val name: String,
 
-    @ManyToMany
-    @JoinTable(
+    @ElementCollection
+    @CollectionTable(
         name = "group_members",
-        joinColumns = [JoinColumn(name = "group_id")],
-        inverseJoinColumns = [JoinColumn(name = "user_id")]
+        joinColumns = [JoinColumn(name = "group_id")]
     )
-    val members: MutableList<User> = mutableListOf()
+    @Column(name = "user_id")
+    val memberIds: MutableList<Long> = mutableListOf()
 )

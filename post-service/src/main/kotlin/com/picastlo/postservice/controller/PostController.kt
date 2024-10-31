@@ -4,7 +4,7 @@ import com.picastlo.postservice.model.Post
 import com.picastlo.postservice.service.PostService
 import com.picastlo.postservice.repository.PostRepository
 
-import com.picastlo.userservice.repository.UserRepository
+//import com.picastlo.userservice.repository.UserRepository
 
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.web.bind.annotation.*
@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile
 @RequestMapping("posts")
 class PostController(
     val postRepository: PostRepository,
-    val userRepository: UserRepository,
+    //val userRepository: UserRepository,
     // val jwtTokenProvider: JwtTokenProvider // Uncomment when JWT logic is implemented
 ) {
 
@@ -38,7 +38,7 @@ class PostController(
             text = text,
             pipelineId = pipelineId,
             visibility = visibility,
-            user = user // Ensure the user object is correctly retrieved
+            userId = 1
         )
 
         postRepository.save(post)
