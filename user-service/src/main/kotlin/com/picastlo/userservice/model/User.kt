@@ -12,7 +12,7 @@ data class User (
     val id: Long? = null,
 
     val username: String,
-    val password: String,
+    val passwordHash: String,
 
     @ManyToMany(cascade = [CascadeType.ALL])
     @JoinTable(
