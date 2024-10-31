@@ -1,4 +1,4 @@
-package com.picastlo.userservice.entity
+package com.picastlo.userservice.model
 
 import jakarta.persistence.*
 
@@ -8,7 +8,7 @@ data class Profile(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
     @Column(name = "user_id")
-    val userId: Long,
+    val userId: Long?,
     val bio: String? = null,
     val avatar: String? = null
 )

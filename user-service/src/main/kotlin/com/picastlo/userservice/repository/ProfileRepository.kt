@@ -1,6 +1,6 @@
 package com.picastlo.userservice.repository
 
-import com.picastlo.userservice.entity.Profile
+import com.picastlo.userservice.model.Profile
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

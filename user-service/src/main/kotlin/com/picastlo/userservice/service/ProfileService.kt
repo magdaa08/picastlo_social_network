@@ -1,6 +1,6 @@
 package com.picastlo.userservice.service
 
-import com.picastlo.userservice.entity.Profile
+import com.picastlo.userservice.model.Profile
 import com.picastlo.userservice.repository.ProfileRepository
 import com.picastlo.userservice.repository.UserRepository
 import org.springframework.stereotype.Service
