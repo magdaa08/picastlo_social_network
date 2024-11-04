@@ -1,9 +1,9 @@
-package com.picastlo.userservice.config
+package com.picastlo.postservice.config
 
 
-import com.picastlo.userservice.config.filters.JWTAuthenticationFilter
-import com.picastlo.userservice.config.filters.JWTUtils
-import com.picastlo.userservice.config.filters.UserPasswordAuthenticationFilterToJWT
+import com.picastlo.postservice.config.filters.JWTAuthenticationFilter
+import com.picastlo.postservice.config.filters.JWTUtils
+import com.picastlo.postservice.config.filters.UserPasswordAuthenticationFilterToJWT
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager

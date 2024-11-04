@@ -1,9 +1,9 @@
 package com.picastlo.userservice
 
-import com.picastlo.userservice.model.Profile
-import com.picastlo.userservice.model.User
-import com.picastlo.userservice.repository.ProfileRepository
-import com.picastlo.userservice.repository.UserRepository
+import com.picastlo.userservice.presentation.model.Profile
+import com.picastlo.userservice.presentation.model.User
+import com.picastlo.userservice.presentation.repository.ProfileRepository
+import com.picastlo.userservice.presentation.repository.UserRepository
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
