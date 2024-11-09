@@ -2,7 +2,7 @@ package com.picastlo.pipelineservice.config.security
 
 import com.picastlo.pipelineservice.config.filters.Operation
 import com.picastlo.pipelineservice.config.filters.UserAuthToken
-import com.picastlo.pipelineservice.presentation.model.Group
+import com.picastlo.pipelineservice.presentation.model.Pipeline
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import java.security.Principal
@@ -33,7 +33,7 @@ class capabilitiesService {
 
     // In a post authorize
     // TODO: test this
-    fun canReadMultipleTrap(user: Principal, resources: List<Group>): Boolean {
+    fun canReadMultipleTrap(user: Principal, resources: List<Pipeline>): Boolean {
         val capabilities = (user as UserAuthToken).capabilities
         resources.forEach {
             val operation = capabilities.get(it.id)
@@ -45,7 +45,7 @@ class capabilitiesService {
 
     // In a post filter
     // TODO: complete and test this
-    fun canReadMultipleFilter(user: Principal, resources: List<Group>): List<Group> {
+    fun canReadMultipleFilter(user: Principal, resources: List<Pipeline>): List<Pipeline> {
         val capabilities = (user as UserAuthToken).capabilities
         return resources.map {
             val operation = capabilities.get(it.id)
