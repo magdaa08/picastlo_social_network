@@ -1,5 +1,10 @@
-package com.picastlo.pipelineservice.repository
+package com.picastlo.pipelineservice.presentation.repository
 
-interface PipelineRepository {
-    //TODO
+import com.picastlo.pipelineservice.presentation.model.Pipeline
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
+
+@Repository
+interface PipelineRepository: JpaRepository<Pipeline, Long> {
+    fun findByOwnerId(ownerId: Long): List<Pipeline>
 }
