@@ -19,9 +19,12 @@ class PipelineController(private val pipelineService: PipelineService) {
         return pipelineService.createPipeline(pipeline)
     }
 
-    @GetMapping("/owner/{ownerId}")
-    fun getPipelinesByOwner(@PathVariable ownerId: Long, principal: Principal): List<Pipeline> {
-        return pipelineService.getPipelinesByOwner(ownerId)
+    @GetMapping("/owner/{username}")
+    fun getPipelinesByUsername(@PathVariable username: String, principal: Principal): List<Pipeline> {
+        val userDTO = pipelineService.getUserDetails(username)
+        val pipelines = pipelineService.getPipelinesByOwner(userDTO.id)
+
+        return pipelines
     }
 
     @PutMapping("/{id}")

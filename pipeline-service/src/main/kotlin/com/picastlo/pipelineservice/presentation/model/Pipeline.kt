@@ -1,5 +1,6 @@
 package com.picastlo.pipelineservice.presentation.model
 
+import com.picastlo.pipelineservice.clients.UserDTO
 import jakarta.persistence.*
 import java.util.*
 
@@ -15,8 +16,8 @@ data class Pipeline(
 
     val description: String? = null,
 
-    @Column(nullable = false)
-    val ownerId: Long,
+    @JoinColumn(nullable = false)
+    var ownerId: Long,
 
     @Lob
     @Column(nullable = false)
@@ -25,4 +26,4 @@ data class Pipeline(
     @Lob
     val initialImage: ByteArray? = null,
 
-)
+    )
