@@ -1,6 +1,5 @@
 package com.picastlo.pipelineservice.presentation.model
 
-import com.picastlo.pipelineservice.clients.UserDTO
 import jakarta.persistence.*
 import java.util.*
 
