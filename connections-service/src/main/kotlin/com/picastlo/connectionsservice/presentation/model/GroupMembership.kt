@@ -2,7 +2,6 @@ package com.picastlo.connectionsservice.presentation.model
 
 import jakarta.persistence.*
 
-
 @Entity
 @Table(name = "group_memberships")
 data class GroupMembership (
