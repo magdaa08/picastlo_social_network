@@ -1,7 +1,7 @@
 package com.picastlo.pipelineservice.presentation.service
 
-import com.picastlo.pipelineservice.clients.UserClient
-import com.picastlo.pipelineservice.clients.UserDTO
+import com.picastlo.pipelineservice.data.UserClient
+import com.picastlo.pipelineservice.data.UserDTO
 import com.picastlo.pipelineservice.config.security.CanCreateResources
 import com.picastlo.pipelineservice.config.security.CanReadAllResources
 import com.picastlo.pipelineservice.config.security.CanReadOneResource
