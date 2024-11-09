@@ -1,5 +1,8 @@
 package com.picastlo.pipelineservice.presentation.service
 
+import com.picastlo.pipelineservice.config.security.CanCreateResources
+import com.picastlo.pipelineservice.config.security.CanReadAllResources
+import com.picastlo.pipelineservice.config.security.CanReadOneResource
 import com.picastlo.pipelineservice.presentation.model.Pipeline
 import com.picastlo.pipelineservice.presentation.repository.PipelineRepository
 import org.springframework.stereotype.Service
@@ -7,18 +10,23 @@ import org.springframework.stereotype.Service
 @Service
 class PipelineService(private val pipelineRepository: PipelineRepository) {
 
-    fun createPipeline(pipeline: Pipeline): Pipeline {
-        return pipelineRepository.save(pipeline)
-    }
 
+    @CanReadOneResource
     fun getPipelineById(id: Long): Pipeline {
         return pipelineRepository.findById(id).orElseThrow { Exception("Pipeline not found") }
     }
 
+    @CanCreateResources
+    fun createPipeline(pipeline: Pipeline): Pipeline {
+        return pipelineRepository.save(pipeline)
+    }
+
+    @CanReadAllResources
     fun getPipelinesByOwner(ownerId: Long): List<Pipeline> {
         return pipelineRepository.findByOwnerId(ownerId)
     }
 
+    @CanCreateResources
     fun updatePipeline(id: Long, updatedPipeline: Pipeline): Pipeline {
         val existingPipeline = getPipelineById(id)
         return pipelineRepository.save(existingPipeline.copy(
@@ -29,6 +37,7 @@ class PipelineService(private val pipelineRepository: PipelineRepository) {
         ))
     }
 
+    @CanCreateResources
     fun deletePipeline(id: Long) {
         pipelineRepository.deleteById(id)
     }
