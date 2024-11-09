@@ -3,14 +3,12 @@ package com.picastlo.connectionsservice.presentation.model
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "groups")
-data class Group(
-
+@Table(name = "friendships")
+data class Friendship (
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     val id: Long? = null,
 
-    val name: String,
-    val description: String
-
+    val userId1: Long,
+    val userId2: Long
 )
