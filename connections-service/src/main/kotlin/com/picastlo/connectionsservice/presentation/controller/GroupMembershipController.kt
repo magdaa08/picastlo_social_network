@@ -10,15 +10,15 @@ import java.security.Principal
 
 
 @RestController
-@RequestMapping("/memberships")
+@RequestMapping("/connections")
 class GroupMembershipController(private val groupMembershipService: GroupMembershipService) {
 
-    @GetMapping("/{id}")
+    @GetMapping("/membership/{id}")
     fun getGroupMembershipById(@PathVariable id: Long, principal: Principal): GroupMembership {
         return groupMembershipService.getGroupMembershipById(id)
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/membership/{username}")
     fun getGroupMembershipByUsername(@PathVariable username: String, principal: Principal): List<GroupMembership> {
         val userDTO = groupMembershipService.getUserDetails(username)
         val groupMemberships = groupMembershipService.getGroupMemberships(userDTO.id)
