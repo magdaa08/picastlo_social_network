@@ -8,8 +8,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
-class GroupServiceApplication
+class ConnectionsServiceApplication
 
 fun main(args: Array<String>) {
-    runApplication<GroupServiceApplication>(*args)
+    runApplication<ConnectionsServiceApplication>(*args)
 }

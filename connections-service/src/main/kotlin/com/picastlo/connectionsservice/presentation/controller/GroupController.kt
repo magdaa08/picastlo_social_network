@@ -7,20 +7,20 @@ import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
 @RestController
-@RequestMapping("/groups")
+@RequestMapping("/connections")
 class GroupController(private val groupService: GroupService) {
 
-    @GetMapping("/{id}")
+    @GetMapping("/groups/{id}")
     fun getGroupById(@PathVariable id: Long, principal: Principal): Group {
         return groupService.getGroupById(id)
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("/groups/{name}")
     fun getGroupByName(@PathVariable name: String, principal: Principal): Group {
         return groupService.getGroupByName(name)
     }
 
-    @GetMapping("/{groupName}/members")
+    @GetMapping("/groups/{groupName}/members")
     fun getGroupMembers(@PathVariable groupName: String): List<GroupMembership> {
         val group = groupService.getGroupByName(groupName)
         return groupService.getGroupMembers(group.id)
