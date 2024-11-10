@@ -24,12 +24,13 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import java.nio.charset.StandardCharsets
 
 
 data class UserLogin(var username:String, var password:String) {
-    constructor() : this("","")
+    constructor() : this("guest","")
 }
 
 class UserPasswordAuthenticationFilterToJWT (
@@ -48,6 +49,8 @@ class UserPasswordAuthenticationFilterToJWT (
 
         // perform the "normal" authentication
         val auth = anAuthenticationManager?.authenticate(UsernamePasswordAuthenticationToken(user.username, user.password))
+
+        System.out.println(user)
 
         return if (auth?.isAuthenticated == true) { // this covers the null case, its a call to equals
             // Proceed with an authenticated user

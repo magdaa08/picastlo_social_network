@@ -2,6 +2,8 @@ package com.picastlo.connectionsservice.presentation.service
 
 import com.picastlo.connectionsservice.config.security.CanReadAllResources
 import com.picastlo.connectionsservice.config.security.CanReadOneResource
+import com.picastlo.connectionsservice.data.UserClient
+import com.picastlo.connectionsservice.data.UserDTO
 import com.picastlo.connectionsservice.presentation.model.Group
 import com.picastlo.connectionsservice.presentation.model.GroupMembership
 import com.picastlo.connectionsservice.presentation.repository.GroupMembershipRepository
@@ -11,7 +13,7 @@ import org.springframework.stereotype.Service
 @Service
 class GroupService(
     private val groupRepository: GroupRepository,
-    private val groupMembershipRepository: GroupMembershipRepository
+    private val groupMembershipRepository: GroupMembershipRepository,
 ) {
 
     @CanReadOneResource

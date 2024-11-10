@@ -21,10 +21,10 @@ class JWTUtils(@Value("\${jwt.secret}") val jwtSecret: String,
 
         val claims = HashMap<String, Any?>()
         claims["username"] = authentication.name
-        if (authentication.name == "admin")
-            claims["capabilities"] = listOf(Capability(0L, "ALL"))
+        if (authentication.name == "guest")
+            claims["capabilities"] = listOf(Capability(0L, "READ"))
         else
-            claims["capabilities"] = emptyList<Capability>()
+            claims["capabilities"] = listOf(Capability(0L, "ALL"))
 
         val token = Jwts.builder()
             .setClaims(claims)

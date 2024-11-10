@@ -3,54 +3,48 @@ package com.picastlo.userservice.config.security
 import com.picastlo.userservice.config.filters.Operation
 import com.picastlo.userservice.config.filters.UserAuthToken
 import com.picastlo.userservice.presentation.model.User
+import com.picastlo.userservice.presentation.repository.UserRepository
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import java.security.Principal
 
 @Service
-class capabilitiesService {
+class capabilitiesService(
+    private val userRepository: UserRepository
+) {
     fun canReadAll(user: Principal): Boolean {
         val capabilities = (user as UserAuthToken).capabilities
-        val operation = capabilities[0L]
+        val operation = capabilities["*"]
         return operation != null && lessOrEqual(Operation.READ, operation)
     }
 
     fun canCreate(user: Principal): Boolean {
         val capabilities = (user as UserAuthToken).capabilities
-        val operation = capabilities[0L]
+        val operation = capabilities[user.name]
         return operation != null && lessOrEqual(Operation.CREATE, operation)
     }
 
     fun canReadOne(user: Principal, id: Long): Boolean {
         val capabilities = (user as UserAuthToken).capabilities
 
-        val operationOne = capabilities[id]
-        val operationAll = capabilities[0L]
+        // Fetch the resource from the database using the provided id
+        val resource = userRepository.findById(id).orElse(null) // Handle the case where resource might not be found
+
+        // Check if resource was found
+        if (resource == null) {
+            return false // Resource does not exist, deny access
+        }
+
+        // Compare the owner of the resource with user.name
+        if (resource.username != user.name) {
+            return false // User does not own the resource, deny access
+        }
+
+        val operationOne = capabilities[resource.username]
+        val operationAll = capabilities["*"]
 
         return operationOne != null && lessOrEqual(Operation.READ, operationOne) ||
                 operationAll != null && lessOrEqual(Operation.READ, operationAll)
-    }
-
-    // In a post authorize
-    // TODO: test this
-    fun canReadMultipleTrap(user: Principal, resources: List<User>): Boolean {
-        val capabilities = (user as UserAuthToken).capabilities
-        resources.forEach {
-            val operation = capabilities.get(it.id)
-            if (operation == null || !lessOrEqual(Operation.READ, operation))
-                return false
-        }
-        return true
-    }
-
-    // In a post filter
-    // TODO: complete and test this
-    fun canReadMultipleFilter(user: Principal, resources: List<User>): List<User> {
-        val capabilities = (user as UserAuthToken).capabilities
-        return resources.map {
-            val operation = capabilities.get(it.id)
-            if (operation != null && lessOrEqual(Operation.READ, operation)) it else null
-        }.mapNotNull { it }
     }
 
     private fun lessOrEqual(op1: Operation, op2: Operation): Boolean {

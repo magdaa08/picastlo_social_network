@@ -15,11 +15,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.GenericFilterBean
 import java.util.*
+import kotlin.collections.LinkedHashMap
 
 data class UserAuthToken(
     private val login:String,
     private val authorities:List<GrantedAuthority>,
-    val capabilities: LinkedHashMap<Long, Operation>
+    val capabilities: LinkedHashMap<String, Operation>
 ) : Authentication {
 
     override fun getAuthorities() = authorities
@@ -52,9 +53,9 @@ class JWTAuthenticationFilter(val utils:JWTUtils): GenericFilterBean() {
             try {
                 val claims = Jwts.parser().setSigningKey(utils.key).parseClaimsJws(token).body
 
-                val capabilities = LinkedHashMap<Long,Operation>()
+                val capabilities = LinkedHashMap<String,Operation>()
                 (claims["capabilities"] as ArrayList<LinkedHashMap<String, *>>).forEach {
-                    val key = (it["resource"] as Integer).toLong()
+                    val key = (it["resource"] as Integer).toString()
                     val operation = it["operation"] as Operation
                     capabilities[key] = operation
                 }
@@ -76,6 +77,19 @@ class JWTAuthenticationFilter(val utils:JWTUtils): GenericFilterBean() {
                 (response as HttpServletResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED)
             }
         } else {
+            // Handle unauthenticated users by giving default capabilities
+            val defaultCapabilities = LinkedHashMap<String, Operation>()
+            // Giving unauthenticated users limited READ access
+            defaultCapabilities["guest"] = Operation.CREATE;
+
+            val authentication = UserAuthToken(
+                "guest", // Default username for unauthenticated users
+                emptyList(), // No granted authorities
+                defaultCapabilities
+            )
+
+            SecurityContextHolder.getContext().authentication = authentication
+
             chain!!.doFilter(request, response)
         }
     }
