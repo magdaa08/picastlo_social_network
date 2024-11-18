@@ -20,7 +20,7 @@ import kotlin.collections.LinkedHashMap
 data class UserAuthToken(
     private val login:String,
     private val authorities:List<GrantedAuthority>,
-    val capabilities: LinkedHashMap<String, Operation>
+    val capabilities: LinkedHashMap<String, String>
 ) : Authentication {
 
     override fun getAuthorities() = authorities
@@ -51,19 +51,20 @@ class JWTAuthenticationFilter(val utils:JWTUtils): GenericFilterBean() {
         if( authHeader != null && authHeader.startsWith("Bearer ") ) {
             val token = authHeader.substring(7) // Skip 7 characters for "Bearer "
             try {
+
                 val claims = Jwts.parser().setSigningKey(utils.key).parseClaimsJws(token).body
 
-                val capabilities = LinkedHashMap<String,Operation>()
+                val capabilities = LinkedHashMap<String,String>()
                 (claims["capabilities"] as ArrayList<LinkedHashMap<String, *>>).forEach {
                     val key = (it["resource"] as Integer).toString()
-                    val operation = it["operation"] as Operation
+                    val operation = it["operation"] as String
                     capabilities[key] = operation
                 }
                 logger.info("Registered capabilities ${capabilities.toString()}")
 
                 val authentication = UserAuthToken(
                     claims["username"] as String,
-                    listOf(SimpleGrantedAuthority("ROLE_USER")),
+                    listOf(SimpleGrantedAuthority("USER")),
                     capabilities
                 )
 
@@ -77,19 +78,6 @@ class JWTAuthenticationFilter(val utils:JWTUtils): GenericFilterBean() {
                 (response as HttpServletResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED)
             }
         } else {
-            // Handle unauthenticated users by giving default capabilities
-            val defaultCapabilities = LinkedHashMap<String, Operation>()
-            // Giving unauthenticated users limited READ access
-            defaultCapabilities["guest"] = Operation.CREATE;
-
-            val authentication = UserAuthToken(
-                "guest", // Default username for unauthenticated users
-                emptyList(), // No granted authorities
-                defaultCapabilities
-            )
-
-            SecurityContextHolder.getContext().authentication = authentication
-
             chain!!.doFilter(request, response)
         }
     }

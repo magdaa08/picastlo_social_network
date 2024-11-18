@@ -2,7 +2,6 @@ package com.picastlo.userservice.config.security
 
 import com.picastlo.userservice.config.filters.Operation
 import com.picastlo.userservice.config.filters.UserAuthToken
-import com.picastlo.userservice.presentation.model.User
 import com.picastlo.userservice.presentation.repository.UserRepository
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
@@ -15,13 +14,13 @@ class capabilitiesService(
     fun canReadAll(user: Principal): Boolean {
         val capabilities = (user as UserAuthToken).capabilities
         val operation = capabilities["*"]
-        return operation != null && lessOrEqual(Operation.READ, operation)
+        return operation != null && lessOrEqual(Operation.READ.toString(), operation)
     }
 
     fun canCreate(user: Principal): Boolean {
         val capabilities = (user as UserAuthToken).capabilities
         val operation = capabilities[user.name]
-        return operation != null && lessOrEqual(Operation.CREATE, operation)
+        return operation != null && lessOrEqual(Operation.CREATE.toString(), operation)
     }
 
     fun canReadOne(user: Principal, id: Long): Boolean {
@@ -43,15 +42,15 @@ class capabilitiesService(
         val operationOne = capabilities[resource.username]
         val operationAll = capabilities["*"]
 
-        return operationOne != null && lessOrEqual(Operation.READ, operationOne) ||
-                operationAll != null && lessOrEqual(Operation.READ, operationAll)
+        return operationOne != null && lessOrEqual(Operation.READ.toString(), operationOne) ||
+                operationAll != null && lessOrEqual(Operation.READ.toString(), operationAll)
     }
 
-    private fun lessOrEqual(op1: Operation, op2: Operation): Boolean {
+    private fun lessOrEqual(op1: String, op2: String): Boolean {
         return op1 == op2 ||
-                op1 == Operation.NONE ||
-                op2 == Operation.ALL ||
-                (op1 == Operation.READ && op2 == Operation.WRITE)
+                op1 == Operation.NONE.toString() ||
+                op2 == Operation.ALL.toString() ||
+                (op1 == Operation.READ.toString() && op2 == Operation.WRITE.toString())
     }
 }
 

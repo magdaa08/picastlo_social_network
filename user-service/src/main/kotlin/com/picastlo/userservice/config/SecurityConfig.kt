@@ -4,23 +4,28 @@ package com.picastlo.userservice.config
 import com.picastlo.userservice.config.filters.JWTAuthenticationFilter
 import com.picastlo.userservice.config.filters.JWTUtils
 import com.picastlo.userservice.config.filters.UserPasswordAuthenticationFilterToJWT
+import com.picastlo.userservice.presentation.service.UserService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.ProviderManager
+import org.springframework.core.annotation.Order
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.invoke
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.User
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository
+import org.springframework.security.web.context.SecurityContextRepository
+import org.springframework.stereotype.Service
 
 
 @Configuration
@@ -28,63 +33,74 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @EnableMethodSecurity
 open class SecurityConfig {
 
+    @Autowired
+    private lateinit var utils: JWTUtils
+
+    @Autowired
+    private lateinit var myUserDetailService: MyUserDetailsService
+
     @Bean
     @Throws(Exception::class)
-    open fun securityFilterChain(
+    fun securityFilterChain(
         http: HttpSecurity,
-        authenticationManager: AuthenticationManager,
-        utils: JWTUtils
+        authenticationProvider: DaoAuthenticationProvider,
+        securityContextRepository: SecurityContextRepository
     ): SecurityFilterChain {
         http.invoke {
+            securityMatcher("/users/**")
             csrf { disable() }
+            headers { httpStrictTransportSecurity { disable() } }
+            sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
             authorizeHttpRequests {
+                authorize("/users/login", permitAll)
                 authorize(anyRequest, authenticated)
             }
-            addFilterBefore<BasicAuthenticationFilter>(UserPasswordAuthenticationFilterToJWT("/users/login", authenticationManager, utils))
-            addFilterBefore<BasicAuthenticationFilter>(JWTAuthenticationFilter(utils))
-            httpBasic { }
+            val customFilter = UserPasswordAuthenticationFilterToJWT("/users/login", authenticationProvider, securityContextRepository, utils)
+            addFilterBefore<UsernamePasswordAuthenticationFilter>(customFilter)
+            addFilterBefore<UsernamePasswordAuthenticationFilter>(JWTAuthenticationFilter(utils))
         }
         return http.build()
     }
 
     @Bean
     fun userDetailsService(): UserDetailsService {
-        val user1 = User.builder()
-            .username("john_doe")
-            .password(BCryptPasswordEncoder().encode("Password@123"))
-            .roles("USER")
-            .build()
-        val user2 = User.builder()
-            .username("jane_smith")
-            .password(BCryptPasswordEncoder().encode("MySecret#456"))
-            .roles("USER")
-            .build()
-        val user3 = User.builder()
-            .username("robert_jones")
-            .password(BCryptPasswordEncoder().encode("HelloWorld$789"))
-            .roles("USER")
-            .build()
-        return InMemoryUserDetailsManager(user1,user2,user3)
+        return myUserDetailService;
     }
 
-    @Bean
-    fun authenticationManager(): AuthenticationManager? {
-        val authenticationProvider = DaoAuthenticationProvider()
-        authenticationProvider.setUserDetailsService(userDetailsService())
-        authenticationProvider.setPasswordEncoder(BCryptPasswordEncoder())
 
-        return ProviderManager(authenticationProvider)
-    }
 
     @Bean
     fun authenticationProvider(): DaoAuthenticationProvider {
-        val authenticationProvider: DaoAuthenticationProvider = DaoAuthenticationProvider()
-        authenticationProvider.setPasswordEncoder(BCryptPasswordEncoder())
+        val authenticationProvider = DaoAuthenticationProvider()
         authenticationProvider.setUserDetailsService(userDetailsService())
+        authenticationProvider.setPasswordEncoder(passwordEncoder())
         return authenticationProvider
+    }
+
+    @Bean
+    fun securityContextRepository(): SecurityContextRepository {
+        return HttpSessionSecurityContextRepository()
     }
 
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
+}
+
+@Service
+class MyUserDetailsService : UserDetailsService {
+
+    @Autowired
+    lateinit var users: UserService
+
+    override fun loadUserByUsername(username: String?): UserDetails? =
+        username?.let {
+            users.findByUsername(it)?.map {
+                User.builder()
+                    .username(it.username)
+                    .password(it.passwordHash)
+                    .roles("USER")
+                    .build()
+            }?.orElse(null)
+        }
 }

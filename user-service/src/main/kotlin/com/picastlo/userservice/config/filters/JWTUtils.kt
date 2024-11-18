@@ -3,17 +3,19 @@ package com.picastlo.userservice.config.filters
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.beans.factory.annotation.Configurable
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.core.Authentication
+import org.springframework.stereotype.Component
 import java.util.*
 
-data class Capability(val resource:Long, val operation: String)
-
-@Configuration
+@Component
 class JWTUtils(@Value("\${jwt.secret}") val jwtSecret: String,
                @Value("\${jwt.expiration}") val expiration: Long,
                @Value("\${jwt.subject}") val subject: String) {
+
+    var token: String? = null
 
     val key = Base64.getEncoder().encodeToString(jwtSecret.toByteArray())
 
@@ -26,7 +28,8 @@ class JWTUtils(@Value("\${jwt.secret}") val jwtSecret: String,
         else
             claims["capabilities"] = listOf(Capability(0L, "ALL"))
 
-        val token = Jwts.builder()
+
+        token = Jwts.builder()
             .setClaims(claims)
             .setSubject(subject)
             .setIssuedAt(Date(System.currentTimeMillis()))
@@ -37,3 +40,5 @@ class JWTUtils(@Value("\${jwt.secret}") val jwtSecret: String,
         response.addHeader("Authorization", "Bearer $token")
     }
 }
+
+data class Capability(val resource:Long, val operation: String)

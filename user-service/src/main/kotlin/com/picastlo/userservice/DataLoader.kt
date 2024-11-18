@@ -4,6 +4,7 @@ import com.picastlo.userservice.presentation.model.Profile
 import com.picastlo.userservice.presentation.model.User
 import com.picastlo.userservice.presentation.repository.ProfileRepository
 import com.picastlo.userservice.presentation.repository.UserRepository
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -11,9 +12,11 @@ import org.springframework.stereotype.Component
 
 @Component
 class DataLoader(
-    private val userRepository: UserRepository,
     private val profileRepository: ProfileRepository
 ) {
+
+    @Autowired
+    private lateinit var userRepository: UserRepository
 
     @Bean
     fun init() = CommandLineRunner {
