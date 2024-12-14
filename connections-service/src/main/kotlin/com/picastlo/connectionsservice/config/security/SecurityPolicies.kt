@@ -1,63 +1,49 @@
 package com.picastlo.connectionsservice.config.security
 
-import com.picastlo.connectionsservice.config.filters.Operation
 import com.picastlo.connectionsservice.config.filters.UserAuthToken
-import com.picastlo.connectionsservice.presentation.model.Group
+import com.picastlo.connectionsservice.data.UserClient
+import com.picastlo.connectionsservice.config.filters.Operation
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import java.security.Principal
 
 @Service
-class capabilitiesService {
+class capabilitiesService(
+    private val userClient: UserClient
+) {
     fun canReadAll(user: Principal): Boolean {
         val capabilities = (user as UserAuthToken).capabilities
-        val operation = capabilities[0L]
-        return operation != null && lessOrEqual(Operation.READ, operation)
+        val operation = capabilities["*"]
+        return operation != null && lessOrEqual(Operation.READ.toString(), operation)
     }
 
     fun canCreate(user: Principal): Boolean {
         val capabilities = (user as UserAuthToken).capabilities
-        val operation = capabilities[0L]
-        return operation != null && lessOrEqual(Operation.CREATE, operation)
+        val operation = capabilities[user.name]
+        return operation != null && lessOrEqual(Operation.CREATE.toString(), operation)
     }
 
     fun canReadOne(user: Principal, id: Long): Boolean {
         val capabilities = (user as UserAuthToken).capabilities
 
-        val operationOne = capabilities[id]
-        val operationAll = capabilities[0L]
+        val resource = userClient.getUserByID(id)
 
-        return operationOne != null && lessOrEqual(Operation.READ, operationOne) ||
-                operationAll != null && lessOrEqual(Operation.READ, operationAll)
-    }
-
-    // In a post authorize
-    // TODO: test this
-    fun canReadMultipleTrap(user: Principal, resources: List<Group>): Boolean {
-        val capabilities = (user as UserAuthToken).capabilities
-        resources.forEach {
-            val operation = capabilities.get(it.id)
-            if (operation == null || !lessOrEqual(Operation.READ, operation))
-                return false
+        if (resource.username != user.name) {
+            return false
         }
-        return true
+
+        val operationOne = capabilities[resource.username]
+        val operationAll = capabilities["*"]
+
+        return operationOne != null && lessOrEqual(Operation.READ.toString(), operationOne) ||
+                operationAll != null && lessOrEqual(Operation.READ.toString(), operationAll)
     }
 
-    // In a post filter
-    // TODO: complete and test this
-    fun canReadMultipleFilter(user: Principal, resources: List<Group>): List<Group> {
-        val capabilities = (user as UserAuthToken).capabilities
-        return resources.map {
-            val operation = capabilities.get(it.id)
-            if (operation != null && lessOrEqual(Operation.READ, operation)) it else null
-        }.mapNotNull { it }
-    }
-
-    private fun lessOrEqual(op1: Operation, op2: Operation): Boolean {
+    private fun lessOrEqual(op1: String, op2: String): Boolean {
         return op1 == op2 ||
-                op1 == Operation.NONE ||
-                op2 == Operation.ALL ||
-                (op1 == Operation.READ && op2 == Operation.WRITE)
+                op1 == Operation.NONE.toString() ||
+                op2 == Operation.ALL.toString() ||
+                (op1 == Operation.READ.toString() && op2 == Operation.WRITE.toString())
     }
 }
 

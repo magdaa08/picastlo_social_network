@@ -6,7 +6,7 @@ import com.picastlo.connectionsservice.presentation.service.GroupService
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
 
-@RestController
+/*@RestController
 @RequestMapping("/connections")
 class GroupController(private val groupService: GroupService) {
 
@@ -26,4 +26,4 @@ class GroupController(private val groupService: GroupService) {
         return groupService.getGroupMembers(group.id)
     }
 
-}
+}*/

@@ -1,100 +1,81 @@
 package com.picastlo.postservice.presentation.controller
 
-import com.picastlo.postservice.config.security.CanCreateResources
-import com.picastlo.postservice.config.security.CanReadAllResources
 import com.picastlo.postservice.presentation.model.Post
-import com.picastlo.postservice.presentation.service.PostService
 import com.picastlo.postservice.presentation.repository.PostRepository
-
-//import com.picastlo.userservice.repository.UserRepository
+import com.picastlo.postservice.presentation.service.ConnectionsClient
+import com.picastlo.postservice.presentation.service.PostAPI
+import com.picastlo.postservice.presentation.service.UserClient
+import com.picastlo.postservice.presentation.service.UserDTO
 
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.multipart.MultipartFile
 import java.security.Principal
 
 @RestController
-@RequestMapping("posts")
 class PostController(
     val postRepository: PostRepository,
-    val postService: PostService
-) {
+    val userClient: UserClient,
+    val connectionsClient: ConnectionsClient
+) : PostAPI {
 
-    @PostMapping("/new")
-    @CanCreateResources()
-    fun createPost(
-        @RequestParam("image") image: MultipartFile,
-        @RequestParam("text") text: String,
-        @RequestParam("pipelineId") pipelineId: String,
-        @RequestParam("visibility") visibility: String,
-        req: HttpServletRequest
-    ): String {
-
-        // Create the post object using the retrieved user
-        val post = Post(
-            image = image.bytes,
-            text = text,
-            pipelineId = pipelineId,
-            visibility = visibility,
-            userId = 1
-        )
-
-        postRepository.save(post)
-
-        return "Post created"
+    override fun deletePost(id: Long) {
+        return postRepository.deleteById(id)
     }
 
-    @GetMapping("/public_feed")
-    fun getPublicFeed(req: HttpServletRequest): List<Post> {
-        return postRepository.findAllByVisibility("PUBLIC") // Ensure this method exists in PostRepository
+    override fun getPublicFeed(req: HttpServletRequest): List<Post> {
+        return postRepository.findAllByVisibility("PUBLIC")
     }
 
-    @PostMapping
-    fun createPost(@RequestBody post: Post, principal: Principal): Post {
-        return postService.createPost(post)
+    override fun createPost(@RequestBody post: Post, principal: Principal): Post {
+        return postRepository.save(post)
     }
 
-    @GetMapping("/owner/{username}")
-    fun getPostsByUsername(@PathVariable username: String, principal: Principal): List<Post> {
-        val userDTO = postService.getUserDetails(username)
+    override fun getPostsByUsername(@PathVariable username: String, principal: Principal): List<Post> {
+        val userDTO = userClient.getUserByUsername(username)
+        println(userDTO)
         val posts = mutableListOf<Post>()
-        posts.addAll(postService.getPostsByOwner(userDTO.id))
+        println("size " + posts.size)
+        posts.addAll(postRepository.findByUserId(userDTO.id))
 
-        val friends = postService.getFriends(username)
-
+        val friends = connectionsClient.getFriendsByUsername(userDTO.username)
+        println("friends $friends")
         for (friend in friends) {
             if (userDTO.id == friend.id1)
             {
-                val friendPosts = postService.getPostsByOwner(friend.id2)
+                val friendPosts = postRepository.findByUserId(friend.id2)
                 for (friendPost in friendPosts) {
-                    if (friendPost.visibility == "friends") {
+                    if (friendPost.visibility == "FRIENDS_ONLY") {
                         posts.add(friendPost)
                     }
                 }
             } else {
-                val friendPosts = postService.getPostsByOwner(friend.id1)
+                val friendPosts = postRepository.findByUserId(friend.id1)
                 for (friendPost in friendPosts) {
-                    if (friendPost.visibility == "friends") {
+                    if (friendPost.visibility == "FRIENDS_ONLY") {
                         posts.add(friendPost)
                     }
                 }
             }
         }
 
-        val groups = postService.getGroups(username)
+        val groups = connectionsClient.getGroupsByUsername(username)
+        val members = mutableListOf<UserDTO>()
 
-        for (user in groups) {
-
-            val groupPosts = postService.getPostsByOwner(user.id)
-            posts.addAll(groupPosts)
-
+        for (group in groups) {
+            members.addAll(connectionsClient.getGroupMembers(group.name))
         }
+
+        for (user in members) {
+
+            val groupPosts = postRepository.findByUserId(user.id)
+
+            for (groupPost in groupPosts) {
+                if (groupPost.visibility == "GROUPS_ONLY") {
+                    posts.add(groupPost)
+                }
+            }
+        }
+        println(posts.size)
         return posts
-    }
-
-
-    @DeleteMapping("/{id}")
-    fun deletePipeline(@PathVariable id: Long, principal: Principal) {
-        return postService.deletePost(id)
     }
 }

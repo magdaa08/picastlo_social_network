@@ -65,7 +65,7 @@ class DataSeeder(
             val memberships = (1..20).map {
                 GroupMembership(
                     group = groups.random(),
-                    userId = Random.nextLong(1, 21)
+                    userId = 1L
                 )
             }
 

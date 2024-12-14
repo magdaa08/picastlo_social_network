@@ -1,5 +1,5 @@
 package com.picastlo.postservice.config.filters
 
 enum class Operation {
-    NONE, READ, WRITE, CREATE, DELETE, ALL
+    NONE, READ, READ_PUBLIC, WRITE, CREATE, DELETE, ALL
 }

@@ -1,6 +1,5 @@
-package com.picastlo.postservice.presentation.data
+package com.picastlo.postservice.presentation.service
 
-import org.apache.catalina.User
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -8,13 +7,13 @@ import org.springframework.web.bind.annotation.PathVariable
 @FeignClient(name = "connections-service", url = "\${connections.service.url}")
 interface ConnectionsClient {
 
-    @GetMapping("/friendships/{username}")
+    @GetMapping("/connections/friendships/{username}")
     fun getFriendsByUsername(@PathVariable username: String): List<FriendshipDTO>
 
-    @GetMapping("/memberships/{username}")
+    @GetMapping("/connections/memberships/{username}")
     fun getGroupsByUsername(@PathVariable username: String): List<GroupDTO>
 
-    @GetMapping("/groups/{groupName}/members")
+    @GetMapping("/connections/groups/{groupName}/members")
     fun getGroupMembers(@PathVariable groupName: String): List<UserDTO>
 
 }

@@ -16,9 +16,9 @@ data class Post (
 
     val text: String,
 
-    val pipelineId: String,
+    val pipelineId: Long,
 
-    val visibility: Visibility,
+    val visibility: String,
 
     @Column(name = "user_id")
     val userId: Long

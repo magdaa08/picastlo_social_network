@@ -4,11 +4,10 @@ package com.picastlo.userservice.config
 import com.picastlo.userservice.config.filters.JWTAuthenticationFilter
 import com.picastlo.userservice.config.filters.JWTUtils
 import com.picastlo.userservice.config.filters.UserPasswordAuthenticationFilterToJWT
-import com.picastlo.userservice.presentation.service.UserService
+import com.picastlo.userservice.presentation.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.annotation.Order
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -22,10 +21,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository
 import org.springframework.security.web.context.SecurityContextRepository
 import org.springframework.stereotype.Service
+import java.util.*
 
 
 @Configuration
@@ -47,15 +46,14 @@ open class SecurityConfig {
         securityContextRepository: SecurityContextRepository
     ): SecurityFilterChain {
         http.invoke {
-            securityMatcher("/users/**")
             csrf { disable() }
             headers { httpStrictTransportSecurity { disable() } }
             sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
             authorizeHttpRequests {
-                authorize("/users/login", permitAll)
-                authorize(anyRequest, authenticated)
+                authorize("/users/current", authenticated)
+                authorize(anyRequest, permitAll)
             }
-            val customFilter = UserPasswordAuthenticationFilterToJWT("/users/login", authenticationProvider, securityContextRepository, utils)
+            val customFilter = UserPasswordAuthenticationFilterToJWT("/login", authenticationProvider, securityContextRepository, utils)
             addFilterBefore<UsernamePasswordAuthenticationFilter>(customFilter)
             addFilterBefore<UsernamePasswordAuthenticationFilter>(JWTAuthenticationFilter(utils))
         }
@@ -91,11 +89,11 @@ open class SecurityConfig {
 class MyUserDetailsService : UserDetailsService {
 
     @Autowired
-    lateinit var users: UserService
+    lateinit var userRepository: UserRepository
 
     override fun loadUserByUsername(username: String?): UserDetails? =
         username?.let {
-            users.findByUsername(it)?.map {
+            userRepository.findByUsername(username)?.let { Optional.of(it) }?.map {
                 User.builder()
                     .username(it.username)
                     .password(it.passwordHash)

@@ -7,7 +7,6 @@ import org.springframework.context.annotation.ComponentScan
 
 @SpringBootApplication
 @EnableDiscoveryClient
-
 class UserServiceApplication
 
 fun main(args: Array<String>) {

@@ -10,7 +10,7 @@ data class GroupMembership (
     @GeneratedValue
     val id: Long? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "group_id", nullable = false)
     val group: Group,
 

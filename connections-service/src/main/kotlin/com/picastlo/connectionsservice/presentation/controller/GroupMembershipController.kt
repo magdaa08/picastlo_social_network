@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 
 
-@RestController
+/*@RestController
 @RequestMapping("/connections")
 class GroupMembershipController(private val groupMembershipService: GroupMembershipService) {
 
@@ -27,5 +27,5 @@ class GroupMembershipController(private val groupMembershipService: GroupMembers
     }
 
 
-}
+}*/
 

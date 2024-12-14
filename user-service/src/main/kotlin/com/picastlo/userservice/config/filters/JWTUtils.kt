@@ -3,9 +3,7 @@ package com.picastlo.userservice.config.filters
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.beans.factory.annotation.Configurable
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Configuration
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
 import java.util.*

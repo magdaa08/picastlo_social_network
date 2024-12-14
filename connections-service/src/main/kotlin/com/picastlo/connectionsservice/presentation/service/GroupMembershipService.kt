@@ -19,12 +19,6 @@ class GroupMembershipService(
         return userClient.getUserByUsername(username)
     }
 
-    @CanReadOneResource
-    fun getGroupMembershipById(id: Long): GroupMembership {
-        return groupMembershipRepository.findById(id).orElseThrow { Exception("Group Membership not found") }
-    }
-
-    @CanReadAllResources
     fun getGroupMemberships(userId: Long): List<GroupMembership> {
         return groupMembershipRepository.findByUserId(userId)
     }

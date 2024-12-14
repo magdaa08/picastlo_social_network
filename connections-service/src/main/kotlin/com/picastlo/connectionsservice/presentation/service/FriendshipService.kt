@@ -15,19 +15,12 @@ class FriendshipService(
 ) {
 
     fun getUserDetails(username: String): UserDTO {
-        // Calling the user service to get the user ID
         return userClient.getUserByUsername(username)
     }
 
-    @CanReadOneResource
-    fun getFriendshipById(id: Long): Friendship {
-        return friendshipRepository.findById(id).orElseThrow { Exception("Friendship not found") }
-    }
-
-    @CanReadAllResources
     fun getFriends(userId: Long): List<Friendship> {
         return friendshipRepository.findByUserId1OrUserId2(userId, userId)
     }
-
-
 }
+
+data class FriendshipDTO(val id1: Long, val id2: Long)

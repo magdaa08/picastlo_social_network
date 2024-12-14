@@ -20,41 +20,51 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.authentication.InternalAuthenticationServiceException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
+import org.springframework.security.web.context.SecurityContextRepository
 import java.nio.charset.StandardCharsets
 
 
 data class UserLogin(var username:String, var password:String) {
-    constructor() : this("","")
+    constructor() : this("guest","")
 }
+
 
 class UserPasswordAuthenticationFilterToJWT (
     defaultFilterProcessesUrl: String?,
-    val anAuthenticationManager: AuthenticationManager?,
-    val utils:JWTUtils
+    val anAuthenticationProvider: DaoAuthenticationProvider?,
+    val securityContextRepository: SecurityContextRepository,
+    @Autowired val utils: JWTUtils
 ) : AbstractAuthenticationProcessingFilter(defaultFilterProcessesUrl) {
 
     override fun attemptAuthentication(request: HttpServletRequest?,
                                        response: HttpServletResponse?): Authentication? {
 
+        val context = SecurityContextHolder.createEmptyContext()
+
         val body = String(request!!.inputStream.readAllBytes(), StandardCharsets.UTF_8)
 
-        //getting user from request body
         val user = ObjectMapper().readValue(body, UserLogin::class.java)
 
-        // perform the "normal" authentication
-        val auth = anAuthenticationManager?.authenticate(UsernamePasswordAuthenticationToken(user.username, user.password))
+        try {
+            val auth = anAuthenticationProvider?.authenticate(UsernamePasswordAuthenticationToken(user.username, user.password))
 
-        return if (auth?.isAuthenticated == true) { // this covers the null case, its a call to equals
-            // Proceed with an authenticated user
-            SecurityContextHolder.getContext().authentication = auth
-            auth
-        } else
-            null
+            return if (auth?.isAuthenticated == true) {
+                context.setAuthentication(auth);
+                SecurityContextHolder.setContext(context);
+                securityContextRepository.saveContext(context, request, response);
+                auth
+            } else
+                null
+        } catch (ex: InternalAuthenticationServiceException) {
+            return null
+        }
     }
 
     override fun successfulAuthentication(request: HttpServletRequest,
@@ -62,7 +72,6 @@ class UserPasswordAuthenticationFilterToJWT (
                                           filterChain: FilterChain?,
                                           auth: Authentication) {
 
-        // When returning from the Filter loop, add the token to the response
         utils.addResponseToken(auth, response)
     }
 }

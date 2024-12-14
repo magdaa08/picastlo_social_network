@@ -15,11 +15,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.GenericFilterBean
 import java.util.*
+import kotlin.collections.LinkedHashMap
 
 data class UserAuthToken(
     private val login:String,
     private val authorities:List<GrantedAuthority>,
-    val capabilities: LinkedHashMap<Long, Operation>
+    val capabilities: LinkedHashMap<String, String>
 ) : Authentication {
 
     override fun getAuthorities() = authorities
@@ -50,19 +51,20 @@ class JWTAuthenticationFilter(val utils:JWTUtils): GenericFilterBean() {
         if( authHeader != null && authHeader.startsWith("Bearer ") ) {
             val token = authHeader.substring(7) // Skip 7 characters for "Bearer "
             try {
+
                 val claims = Jwts.parser().setSigningKey(utils.key).parseClaimsJws(token).body
 
-                val capabilities = LinkedHashMap<Long,Operation>()
+                val capabilities = LinkedHashMap<String,String>()
                 (claims["capabilities"] as ArrayList<LinkedHashMap<String, *>>).forEach {
-                    val key = (it["resource"] as Integer).toLong()
-                    val operation = it["operation"] as Operation
+                    val key = (it["resource"] as Integer).toString()
+                    val operation = it["operation"] as String
                     capabilities[key] = operation
                 }
                 logger.info("Registered capabilities ${capabilities.toString()}")
 
                 val authentication = UserAuthToken(
                     claims["username"] as String,
-                    listOf(SimpleGrantedAuthority("ROLE_USER")),
+                    listOf(SimpleGrantedAuthority("USER")),
                     capabilities
                 )
 

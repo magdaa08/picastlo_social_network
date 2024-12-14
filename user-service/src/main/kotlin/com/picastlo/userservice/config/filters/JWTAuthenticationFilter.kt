@@ -78,6 +78,17 @@ class JWTAuthenticationFilter(val utils:JWTUtils): GenericFilterBean() {
                 (response as HttpServletResponse).sendError(HttpServletResponse.SC_UNAUTHORIZED)
             }
         } else {
+            val defaultCapabilities = LinkedHashMap<String, String>()
+            defaultCapabilities["0"] = Operation.READ.toString();
+
+            val authentication = UserAuthToken(
+                "guest",
+                emptyList(),
+                defaultCapabilities
+            )
+
+            SecurityContextHolder.getContext().authentication = authentication
+
             chain!!.doFilter(request, response)
         }
     }
