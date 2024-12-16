@@ -7,12 +7,8 @@ import { GlobalState, store } from './store';
 
 function App() {
 
-  const counter = useSelector((state:GlobalState) => state.counter)
-
   return (
    <div>
-    {counter}
-    <Counter/>
     <Homepage/>
     </div>
   );
