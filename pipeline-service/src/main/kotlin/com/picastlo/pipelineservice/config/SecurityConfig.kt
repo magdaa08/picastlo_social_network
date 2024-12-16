@@ -36,7 +36,7 @@ open class SecurityConfig {
         http.invoke {
             csrf { disable() }
             authorizeHttpRequests {
-                authorize(anyRequest, authenticated)
+                authorize(anyRequest, permitAll)
             }
             addFilterBefore<BasicAuthenticationFilter>(UserPasswordAuthenticationFilterToJWT("/login", authenticationManager, utils))
             addFilterBefore<BasicAuthenticationFilter>(JWTAuthenticationFilter(utils))

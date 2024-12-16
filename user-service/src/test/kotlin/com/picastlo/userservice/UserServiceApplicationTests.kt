@@ -80,7 +80,7 @@ class ServiceApplicationTests {
         val userLogin = UserLogin("john_doe", "Password@123")
 
         mockMvc.perform(
-            post("/login")
+            post("/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userLogin))
         )

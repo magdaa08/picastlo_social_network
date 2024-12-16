@@ -53,7 +53,7 @@ open class SecurityConfig {
                 authorize("/users/current", authenticated)
                 authorize(anyRequest, permitAll)
             }
-            val customFilter = UserPasswordAuthenticationFilterToJWT("/login", authenticationProvider, securityContextRepository, utils)
+            val customFilter = UserPasswordAuthenticationFilterToJWT("/users/login", authenticationProvider, securityContextRepository, utils)
             addFilterBefore<UsernamePasswordAuthenticationFilter>(customFilter)
             addFilterBefore<UsernamePasswordAuthenticationFilter>(JWTAuthenticationFilter(utils))
         }

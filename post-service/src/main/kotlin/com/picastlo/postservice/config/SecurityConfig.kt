@@ -65,8 +65,6 @@ open class SecurityConfig {
         return myUserDetailService;
     }
 
-
-
     @Bean
     fun authenticationProvider(): DaoAuthenticationProvider {
         val authenticationProvider = DaoAuthenticationProvider()
