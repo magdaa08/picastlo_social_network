@@ -2,21 +2,31 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GlobalState } from "../../store";
 import { actionDecrement, actionIncrement } from "../../store/Counter";
+import { fetchPublicFeed } from "../../store/Posts";
 import axios from 'axios';
 
 export const Homepage = () => {
-    let [loading, setLoading]=useState(true);
-    let [posts, setPosts]=useState([] as any[]);
+  let [loading, setLoading]=useState(true);
+  let [posts, setPosts]=useState([] as any[]);
+  let [users, setUsers]=useState([] as any[]);
   const counter = useSelector((state: GlobalState) => state.counter);
   //const {posts, loading} = useSelector((state:GlobalState) => state.posts)
   const dispatch = useDispatch();
 
-   axios.get('/posts/public_feed').then((response)=>{
+  /*useEffect(() => {
+    (dispatch as any)(fetchPublicFeed());
+  }, [dispatch]);
+  */
+
+  axios.get('/posts/public_feed').then((response)=>{
     setPosts(response.data);
     setLoading(false);
+  });
 
-    console.log(posts);
-   });
+  axios.get('/users').then((response)=>{
+    setUsers(response.data);
+  });
+   
 
    return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -39,12 +49,12 @@ export const Homepage = () => {
             >
               <div className="flex items-center space-x-4">
                 <img
-                  src={post.userProfilePicture || "https://api.dicebear.com/9.x/big-ears/svg?seed="+index}
+                  src={post.userProfilePicture || "https://api.dicebear.com/9.x/big-ears/svg?seed="+post.userId}
                   alt="User Profile"
                   className="w-10 h-10 rounded-full"
                 />
                 <h2 className="text-lg font-semibold text-gray-800">
-                  {post.userName || "Anonymous User"}
+                  {users[post.userId].username || "Anonymous User"}
                 </h2>
               </div>
               <p className="text-gray-700">{post.text}</p>

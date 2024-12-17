@@ -1,106 +1,102 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { PostsApi } from '../../api/posts'; // Your API import
 import axios from 'axios';
-import { PostsApi } from '../../api/posts';
-
-// Define the Post interface
-export interface Post {
-  id: number;
-  title: string;
-  content: string;
-  imageUrl?: string;
-  visibility: 'PUBLIC' | 'FRIENDS_ONLY' | 'GROUPS_ONLY';
-  userId: number; // ID of the post's owner
-  createdAt: string; // ISO string
-}
 
 // Define the initial state for the slice
-interface PostState {
-  posts: Post[]; // List of all posts
-  currentPost: Post | null; // Currently selected or viewed post
-  status: 'idle' | 'loading' | 'failed'; // Status of async operations
-  error: string | null; // Error messages
+export interface PostState {
+  posts: any[]; // Type posts as any[]
+  loading: boolean;
+  uploading: boolean;
+  error: string | null; // Keep track of errors as string or null
 }
 
 const initialState: PostState = {
   posts: [],
-  currentPost: null,
-  status: 'idle',
-  error: null,
+  loading: false,
+  uploading: false,
+  error: null, // Initially no error
 };
 
-// Async Thunks for post operations
+const api = new PostsApi(); // Assuming you have an API class to fetch posts
 
-const api = new PostsApi();
-
-// Fetch the public feed
-export const fetchPublicFeed = createAsyncThunk('posts/fetchPublicFeed', async (_, { rejectWithValue }) => {
-  try {
-    const response = await api.getPublicFeed
-    return response;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'Failed to fetch public feed.');
-  }
-});
-
-// Fetch posts by a specific username
-export const fetchPostsByUsername = createAsyncThunk(
-  'posts/fetchPostsByUsername',
-  async (username: string, { rejectWithValue }) => {
-    try {
-      const response = await axios.get<Post[]>(`/api/posts/${username}`);
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || `Failed to fetch posts for ${username}.`);
-    }
-  }
-);
-
-// Create a new post
-export const createPost = createAsyncThunk('posts/createPost', async (post: Omit<Post, 'id' | 'createdAt'>, { rejectWithValue }) => {
-  try {
-    const response = await axios.post<Post>('/api/posts/new', post);
-    return response.data;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'Failed to create post.');
-  }
-});
-
-// Update an existing post
-export const updatePost = createAsyncThunk('posts/updatePost', async (post: Post, { rejectWithValue }) => {
-  try {
-    const response = await axios.put<Post>(`/api/posts/${post.id}`, post);
-    return response.data;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || 'Failed to update post.');
-  }
-});
-
-// Delete a post by ID
-export const deletePost = createAsyncThunk('posts/deletePost', async (id: number, { rejectWithValue }) => {
-  try {
-    await axios.delete(`/api/posts/${id}`);
-    return id;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || `Failed to delete post with ID: ${id}`);
-  }
-});
-
-// Post slice
+// Slice with actions and reducers
 const postSlice = createSlice({
   name: 'posts',
   initialState,
   reducers: {
-    setCurrentPost(state, action: PayloadAction<Post | null>) {
-      state.currentPost = action.payload;
+    setPosts: (state, action: PayloadAction<any[]>) => {
+      state.posts = action.payload;
+      state.loading = false; // Set loading to false after fetching posts
     },
-    clearError(state) {
-      state.error = null;
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
+    },
+    setUploading: (state, action: PayloadAction<boolean>) => {
+      state.uploading = action.payload;
+    },
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload; // Set the error message when it occurs
     },
   },
 });
 
-// Export actions
-export const { setCurrentPost, clearError } = postSlice.actions;
+const { setPosts, setLoading, setUploading, setError } = postSlice.actions;
 
-// Export reducer
+// Fetch all posts (this is your public feed)
+export const fetchPublicFeed = () => async (dispatch: any) => {
+  dispatch(setLoading(true)); // Set loading to true when starting to fetch posts
+
+  try {
+    const response = await api.getPublicFeed(); // Assuming you have a method for this
+    dispatch(setPosts(response)); // Dispatch the posts after fetching them
+  } catch (error: any) {
+    dispatch(setError(error.message || 'Failed to fetch posts.')); // Set error message
+  } finally {
+    dispatch(setLoading(false)); // Set loading to false when done
+  }
+};
+
+// Create a new post
+export const createPost = (post: any) => async (dispatch: any) => {
+  dispatch(setUploading(true)); // Set uploading to true when starting the upload
+
+  try {
+    const response = await axios.post('/posts/new', post); // Replace with your actual API endpoint
+    dispatch(setPosts([...initialState.posts, response.data])); // Add new post to the state
+  } catch (error: any) {
+    dispatch(setError(error.message || 'Failed to create post.')); // Set error message
+  } finally {
+    dispatch(setUploading(false)); // Set uploading to false when done
+  }
+};
+
+// Update an existing post
+export const updatePost = (post: any) => async (dispatch: any) => {
+  dispatch(setLoading(true)); // Set loading to true while updating
+
+  try {
+    const response = await axios.put(`/posts/${post.id}`, post);
+    dispatch(setPosts(initialState.posts.map(p => p.id === post.id ? response.data : p)));
+  } catch (error: any) {
+    dispatch(setError(error.message || 'Failed to update post.')); // Set error message
+  } finally {
+    dispatch(setLoading(false)); // Set loading to false when done
+  }
+};
+
+// Delete a post
+export const deletePost = (id: number) => async (dispatch: any) => {
+  dispatch(setLoading(true)); // Set loading to true while deleting
+
+  try {
+    await axios.delete(`/posts/${id}`);
+    dispatch(setPosts(initialState.posts.filter(post => post.id !== id))); // Remove deleted post from state
+  } catch (error: any) {
+    dispatch(setError(error.message || 'Failed to delete post.')); // Set error message
+  } finally {
+    dispatch(setLoading(false)); // Set loading to false when done
+  }
+};
+
+// Export actions and reducer
 export default postSlice.reducer;

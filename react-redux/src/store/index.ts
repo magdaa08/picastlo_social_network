@@ -1,19 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit"
 import { logger } from 'redux-logger'
-import bookReducer, { BooksState, actionLoadBooks } from "./Books"
+import postReducer, { fetchPublicFeed, PostState } from "./Posts"
 import counterReducer, { CounterState } from "./Counter"
 
 export interface GlobalState {
-    books: BooksState,
+    posts: PostState,
     counter: CounterState
 }
 
 export const store = configureStore({
     reducer : {
-        books: bookReducer,
+        posts: postReducer,
         counter: counterReducer
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat([logger]),
 })
 
-// store.dispatch(actionLoadBooks())
+store.dispatch(fetchPublicFeed())
