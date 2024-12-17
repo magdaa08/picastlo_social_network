@@ -1,0 +1,7 @@
+.openapi-generator-ignore
+apis/PipelineControllerApi.ts
+apis/index.ts
+index.ts
+models/Pipeline.ts
+models/index.ts
+runtime.ts

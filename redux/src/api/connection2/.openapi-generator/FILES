@@ -1,0 +1,12 @@
+.gitignore
+.openapi-generator-ignore
+src/apis/ConnectionsControllerApi.ts
+src/apis/index.ts
+src/index.ts
+src/models/FriendshipDTO.ts
+src/models/Group.ts
+src/models/GroupDTO.ts
+src/models/UserDTO.ts
+src/models/index.ts
+src/runtime.ts
+tsconfig.json

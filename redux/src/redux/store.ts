@@ -7,7 +7,7 @@ import connectionsReducer from './slices/connectionsSlice';
 
 export const store = configureStore({
   reducer: {
-    auth: authReducer, // Add auth slice here
+    auth: authReducer,
     user: userReducer,
     posts: postReducer,
     pipelines: pipelineReducer,

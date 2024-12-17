@@ -1,0 +1,10 @@
+.openapi-generator-ignore
+apis/ConnectionsControllerApi.ts
+apis/index.ts
+index.ts
+models/FriendshipDTO.ts
+models/Group.ts
+models/GroupDTO.ts
+models/UserDTO.ts
+models/index.ts
+runtime.ts

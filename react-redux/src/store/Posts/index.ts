@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { PostsApi } from '../../api/posts';
 
 // Define the Post interface
 export interface Post {
@@ -29,11 +30,13 @@ const initialState: PostState = {
 
 // Async Thunks for post operations
 
+const api = new PostsApi();
+
 // Fetch the public feed
 export const fetchPublicFeed = createAsyncThunk('posts/fetchPublicFeed', async (_, { rejectWithValue }) => {
   try {
-    const response = await axios.get<Post[]>('/posts/public_feed');
-    return response.data;
+    const response = await api.getPublicFeed
+    return response;
   } catch (error: any) {
     return rejectWithValue(error.response?.data?.message || 'Failed to fetch public feed.');
   }
@@ -93,81 +96,6 @@ const postSlice = createSlice({
     clearError(state) {
       state.error = null;
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      // Fetch public feed
-      .addCase(fetchPublicFeed.pending, (state) => {
-        state.status = 'loading';
-        state.error = null;
-      })
-      .addCase(fetchPublicFeed.fulfilled, (state, action: PayloadAction<Post[]>) => {
-        state.status = 'idle';
-        state.posts = action.payload;
-      })
-      .addCase(fetchPublicFeed.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload as string;
-      })
-
-      // Fetch posts by username
-      .addCase(fetchPostsByUsername.pending, (state) => {
-        state.status = 'loading';
-        state.error = null;
-      })
-      .addCase(fetchPostsByUsername.fulfilled, (state, action: PayloadAction<Post[]>) => {
-        state.status = 'idle';
-        state.posts = action.payload;
-      })
-      .addCase(fetchPostsByUsername.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload as string;
-      })
-
-      // Create post
-      .addCase(createPost.pending, (state) => {
-        state.status = 'loading';
-        state.error = null;
-      })
-      .addCase(createPost.fulfilled, (state, action: PayloadAction<Post>) => {
-        state.status = 'idle';
-        state.posts.push(action.payload);
-      })
-      .addCase(createPost.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload as string;
-      })
-
-      // Update post
-      .addCase(updatePost.pending, (state) => {
-        state.status = 'loading';
-        state.error = null;
-      })
-      .addCase(updatePost.fulfilled, (state, action: PayloadAction<Post>) => {
-        state.status = 'idle';
-        const index = state.posts.findIndex((post) => post.id === action.payload.id);
-        if (index !== -1) {
-          state.posts[index] = action.payload;
-        }
-      })
-      .addCase(updatePost.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload as string;
-      })
-
-      // Delete post
-      .addCase(deletePost.pending, (state) => {
-        state.status = 'loading';
-        state.error = null;
-      })
-      .addCase(deletePost.fulfilled, (state, action: PayloadAction<number>) => {
-        state.status = 'idle';
-        state.posts = state.posts.filter((post) => post.id !== action.payload);
-      })
-      .addCase(deletePost.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload as string;
-      });
   },
 });
 
