@@ -24,14 +24,14 @@ class DataSeeder {
                 text = "Just finished reading an incredible book on AI and its future implications. Highly recommend it!",
                 pipelineId = 3L,
                 visibility = "PUBLIC",
-                userId = 1L
+                userId = 2L
             ),
             Post(
                 image = null,
                 text = "Starting a new project on renewable energy. Let’s make the world a greener place!",
                 pipelineId = 6L,
                 visibility = "PUBLIC",
-                userId = 1L
+                userId = 3L
             ),
             Post(
                 image = null,
@@ -52,14 +52,14 @@ class DataSeeder {
                 text = "Celebrating 5 years at my dream job today! Grateful for all the learning and growth. 🙌",
                 pipelineId = 10L,
                 visibility = "PUBLIC",
-                userId = 1L
+                userId = 6L
             ),
             Post(
                 image = null,
                 text = "Recipe of the day: Homemade pizza with a twist of spicy BBQ sauce. 🍕🔥 Who wants the recipe?",
                 pipelineId = 2L,
                 visibility = "PUBLIC",
-                userId = 1L
+                userId = 7L
             ),
             Post(
                 image = null,
@@ -73,7 +73,7 @@ class DataSeeder {
                 text = "Launching a new open-source project for beginner developers. Stay tuned for updates!",
                 pipelineId = 18L,
                 visibility = "PUBLIC",
-                userId = 1L
+                userId = 8L
             ),
             Post(
                 image = null,
