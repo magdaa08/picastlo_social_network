@@ -12,7 +12,7 @@ data class Post (
     val id: Long? = null,
 
     @Lob
-    val image: ByteArray?,
+    val image: String?,
 
     val text: String,
 

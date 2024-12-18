@@ -104,6 +104,8 @@
                     </args>
                     <compilerPlugins>
                         <plugin>spring</plugin>
+                        <plugin>all-open</plugin>
+
                     </compilerPlugins>
                 </configuration>
                 <dependencies>
