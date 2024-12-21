@@ -1,15 +1,14 @@
-import './App.css';
-import Counter from './components/Counter';
-import Homepage from './pages/Homepage';
-import Login from './pages/Login';
-import { Provider, useSelector } from 'react-redux'
-import { GlobalState, store } from './store';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import React from "react";
+import "./App.css";
+import Homepage from "./pages/Homepage";
+import Login from "./pages/Login";
+import { Provider } from "react-redux";
+import { store } from "./store";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
-
   return (
-  <Router>
+    <Router>
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<Login />} />
@@ -18,9 +17,10 @@ function App() {
   );
 }
 
-const RdxApp = () => 
+const RdxApp = () => (
   <Provider store={store}>
-    <App/>
+    <App />
   </Provider>
+);
 
 export default RdxApp;

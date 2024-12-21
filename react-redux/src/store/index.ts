@@ -1,19 +1,18 @@
-import { configureStore } from "@reduxjs/toolkit"
-import { logger } from 'redux-logger'
-import postReducer, { fetchPublicFeed, PostState } from "./Posts"
-import counterReducer, { CounterState } from "./Counter"
+import { configureStore } from "@reduxjs/toolkit";
+import { logger } from "redux-logger";
+import postReducer, { fetchPublicFeed, PostState } from "./Posts";
 
 export interface GlobalState {
-    posts: PostState,
-    counter: CounterState
+  posts: PostState;
 }
 
 export const store = configureStore({
-    reducer : {
-        posts: postReducer,
-        counter: counterReducer
-    },
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat([logger]),
-})
+  reducer: {
+    posts: postReducer,
+  },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat([logger]),
+});
 
-store.dispatch(fetchPublicFeed())
+store.dispatch(fetchPublicFeed());
+
+export type AppDispatch = typeof store.dispatch;
