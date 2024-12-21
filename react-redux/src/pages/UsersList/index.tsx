@@ -5,7 +5,6 @@ import { fetchUsers } from "../../store/Users";
 import { Link } from "react-router-dom";
 
 const UsersList = () => {
-
   const dispatch = useDispatch<AppDispatch>();
   const { users, usersLoading } = useSelector((state: GlobalState) => state.users);
 
@@ -13,7 +12,7 @@ const UsersList = () => {
   const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
 
   useEffect(() => {
-    dispatch(fetchUsers());
+    dispatch(fetchUsers()); // Fetch the users when the component mounts
   }, [dispatch]);
 
   useEffect(() => {
@@ -53,7 +52,10 @@ const UsersList = () => {
                   alt="User Profile"
                   className="w-10 h-10 rounded-full shadow-md"
                 />
-                <h2 className="text-lg font-semibold text-gray-800">{user.username}</h2>
+                {/* Make username a link to the user's profile */}
+                <Link to={`/users/${user.id}`} className="text-lg font-semibold text-gray-800 hover:text-blue-600">
+                  {user.username}
+                </Link>
               </div>
             </div>
           ))

@@ -25,7 +25,7 @@ export const Homepage = () => {
 
         {/* Left side - List Of Users button */}
         <div className="flex-shrink-0">
-          <Link to="/users-list">
+          <Link to="/users">
             <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
               List Of Users
             </button>
