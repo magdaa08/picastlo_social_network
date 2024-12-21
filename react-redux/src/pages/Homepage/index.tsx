@@ -22,17 +22,32 @@ export const Homepage = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="flex justify-between items-center mb-6 mx-5">
-        <div className="ml-auto">
-          <h1 className="text-4xl font-extrabold text-blue-600 pl-20">
+        
+        {/* Left side - Search Users button */}
+        <div className="flex-shrink-0">
+          <Link to="/search-users">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+              Search Users
+            </button>
+          </Link>
+        </div>
+
+        {/* Center - Welcome Title */}
+        <div className="flex-grow text-center">
+          <h1 className="text-4xl font-extrabold text-blue-600">
             Welcome to Picastlo Social Network
           </h1>
         </div>
 
-        <Link to="/login" className=" ml-auto">
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-            Login
-          </button>
-        </Link>
+        {/* Right side - Login button */}
+        <div className="flex-shrink-0">
+          <Link to="/login">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+              Login
+            </button>
+          </Link>
+        </div>
+
       </div>
 
       {postsLoading && usersLoading && <p className="text-center text-gray-500">Loading posts...</p>}
