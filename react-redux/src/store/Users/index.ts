@@ -4,28 +4,28 @@ import { AnyAction } from "redux";
 import axios from "axios";
 import { GlobalState } from "../index";
 
-export interface PostState {
-  posts: any[];
-  postsLoading: boolean;
+export interface UserState {
+  users: any[];
+  usersLoading: boolean;
   error: string | null;
 }
 
-const initialState: PostState = {
-  posts: [],
-  postsLoading: false,
+const initialState: UserState = {
+  users: [],
+  usersLoading: false,
   error: null,
 };
 
-const postSlice = createSlice({
-  name: "posts",
+const userSlice = createSlice({
+  name: "users",
   initialState,
   reducers: {
-    setPosts: (state, action: PayloadAction<any[]>) => {
-      state.posts = action.payload;
-      state.postsLoading = false;
+    setUsers: (state, action: PayloadAction<any[]>) => {
+      state.users = action.payload;
+      state.usersLoading = false;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
-      state.postsLoading = action.payload;
+      state.usersLoading = action.payload;
     },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
@@ -33,20 +33,20 @@ const postSlice = createSlice({
   },
 });
 
-const { setPosts, setLoading, setError } = postSlice.actions;
+const { setUsers, setLoading, setError } = userSlice.actions;
 
-export const fetchPublicFeed =
+export const fetchUsers =
   (): ThunkAction<void, GlobalState, unknown, AnyAction> =>
   async (dispatch) => {
     dispatch(setLoading(true));
     try {
-      const response = await axios.get("/posts/public_feed");
-      dispatch(setPosts(response.data));
+      const response = await axios.get("/users");
+      dispatch(setUsers(response.data));
     } catch (error: any) {
-      dispatch(setError(error.message || "Failed to fetch posts."));
+      dispatch(setError(error.message || "Failed to fetch users."));
     } finally {
       dispatch(setLoading(false));
     }
   };
 
-export default postSlice.reducer;
+export default userSlice.reducer;

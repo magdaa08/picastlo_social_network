@@ -6,11 +6,18 @@ import { Link } from "react-router-dom";
 
 export const Homepage = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { posts, loading } = useSelector((state: GlobalState) => state.posts);
+  const { posts, postsLoading } = useSelector((state: GlobalState) => state.posts);
+  const { users, usersLoading } = useSelector((state: GlobalState) => state.users);
 
   useEffect(() => {
     dispatch(fetchPublicFeed());
   }, [dispatch]);
+
+  const getUsername = (userId: string) => {
+    const user = users.find((user: any) => user.id === userId);
+    return user ? user.username : "Anonymous User";
+  };
+  
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -28,13 +35,13 @@ export const Homepage = () => {
         </Link>
       </div>
 
-      {loading && <p className="text-center text-gray-500">Loading posts...</p>}
+      {postsLoading && usersLoading && <p className="text-center text-gray-500">Loading posts...</p>}
 
-      {!loading && posts.length === 0 && (
+      {!postsLoading && !usersLoading && posts.length === 0 && (
         <p className="text-center text-gray-500">No posts available.</p>
       )}
 
-      {!loading && posts.length > 0 && (
+      {!postsLoading && !usersLoading && posts.length > 0 && (
         <div className="space-y-4 flex flex-col items-center">
           {posts.map((post, index) => (
             <div
@@ -52,7 +59,7 @@ export const Homepage = () => {
                   className="w-10 h-10 rounded-full shadow-md"
                 />
                 <h2 className="text-lg font-semibold text-gray-800">
-                  {post.username || "Anonymous User"}
+                  {getUsername(post.userId)}
                 </h2>
               </div>
               <p className="text-gray-700">{post.text}</p>
