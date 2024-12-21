@@ -22,12 +22,12 @@ export const Homepage = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="flex justify-between items-center mb-6 mx-5">
-        
-        {/* Left side - Search Users button */}
+
+        {/* Left side - List Of Users button */}
         <div className="flex-shrink-0">
-          <Link to="/search-users">
+          <Link to="/users-list">
             <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-              Search Users
+              List Of Users
             </button>
           </Link>
         </div>
