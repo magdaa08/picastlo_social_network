@@ -17,8 +17,7 @@ import java.util.*
 
 
 @RestController
-class ProfileController(private val profileRepository: ProfileRepository, private val userRepository: UserRepository) :
-    ProfileAPI {
+class ProfileController(private val profileRepository: ProfileRepository) : ProfileAPI {
 
     override fun getProfileByUserID(id: Long): ProfileDTO? {
         val profile = profileRepository.findById(id).get()

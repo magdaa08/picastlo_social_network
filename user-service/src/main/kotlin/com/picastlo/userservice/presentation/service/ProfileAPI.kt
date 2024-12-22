@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 
 
-@RequestMapping("/profiles")
+@RequestMapping("/users")
 interface ProfileAPI {
 
     @CanReadResources
@@ -16,7 +16,7 @@ interface ProfileAPI {
     fun getProfileByUserID(@PathVariable id: Long): ProfileDTO?
 
     @CanReadResources
-    @GetMapping
+    @GetMapping("/profiles")
     fun getAllProfiles(): List<ProfileDTO>
 
 }
