@@ -4,31 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { GlobalState, AppDispatch } from "../../store";
 import { fetchUsers } from "../../store/Users";
 import { fetchProfiles } from "../../store/Profiles";
-import axios from "axios";
 
 const UserProfile = () => {
 
-    //const [profiles, setProfiles] = useState<any[] | null>(null);
-    //const [profLoading, setProfLoading] = useState<boolean>(true);
     const { profiles, profilesLoading } = useSelector((state: GlobalState) => state.profiles);
     const [userProfile, setUserProfile] = useState<any | null>(null);
 
-    /* once we have the new generated api, this will change
-    useEffect(() => {
-      const fetchProfiles = async () => {
-        try {
-          const response = await axios.get("http://localhost:8080/users/profiles");
-          console.log("Profiles fetched: ", response.data);
-          setProfiles(response.data);
-          setProfLoading(false); 
-        } catch (err) {
-          
-        }
-      };
-  
-      fetchProfiles();
-    }, []);
-*/
     const { userId } = useParams<{ userId: string }>(); // Get userId from URL params
     const dispatch = useDispatch<AppDispatch>();
     const { users, usersLoading } = useSelector((state: GlobalState) => state.users);
