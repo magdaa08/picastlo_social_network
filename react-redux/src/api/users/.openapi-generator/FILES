@@ -1,7 +1,9 @@
 .openapi-generator-ignore
+apis/ProfileControllerApi.ts
 apis/UserControllerApi.ts
 apis/index.ts
 index.ts
+models/ProfileDTO.ts
 models/UserDTO.ts
 models/index.ts
 runtime.ts

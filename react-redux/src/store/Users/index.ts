@@ -8,12 +8,16 @@ export interface UserState {
   users: any[];
   usersLoading: boolean;
   error: string | null;
+  isAuthenticated: boolean;
+  currentUser: any | null;
 }
 
 const initialState: UserState = {
   users: [],
   usersLoading: false,
   error: null,
+  isAuthenticated: false,
+  currentUser: null,
 };
 
 const userSlice = createSlice({
@@ -30,10 +34,36 @@ const userSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
+    setAuthenticated: (state, action: PayloadAction<boolean>) => {
+      state.isAuthenticated = action.payload;
+    },
+    setCurrentUser: (state, action: PayloadAction<any | null>) => {
+      state.currentUser = action.payload;
+    },
   },
 });
 
-const { setUsers, setLoading, setError } = userSlice.actions;
+const { setUsers, setLoading, setError, setAuthenticated, setCurrentUser } =
+  userSlice.actions;
+
+export const login =
+  (
+    username: string,
+    password: string
+  ): ThunkAction<void, GlobalState, unknown, AnyAction> =>
+  async (dispatch) => {
+    dispatch(setLoading(true));
+    try {
+      const response = await axios.post("/users/login", { username, password });
+      dispatch(setAuthenticated(true));
+      dispatch(setCurrentUser(response.data));
+    } catch (error: any) {
+      dispatch(setError(error.response?.data?.message || "Login failed."));
+      dispatch(setAuthenticated(false));
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 
 export const fetchUsers =
   (): ThunkAction<void, GlobalState, unknown, AnyAction> =>

@@ -1,27 +1,52 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../store/Users";
+import { GlobalState, AppDispatch } from "../../store";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const { isAuthenticated, usersLoading, error } = useSelector(
+    (state: GlobalState) => state.users
+  );
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    dispatch(login(username, password));
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-96">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Login</h2>
-        
-        <form>
-          {/* Email Field */}
+
+        {error && <div className="mb-4 text-red-500 text-center">{error}</div>}
+
+        <form onSubmit={handleLogin}>
           <div className="mb-4">
             <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
-              Email
+              Username
             </label>
             <input
-              type="email"
               id="email"
-              placeholder="Enter your email"
+              placeholder="Enter your username"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
 
-          {/* Password Field */}
           <div className="mb-6">
             <label htmlFor="password" className="block text-gray-700 font-medium mb-2">
               Password
@@ -31,37 +56,28 @@ const Login = () => {
               id="password"
               placeholder="Enter your password"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+            className={`w-full py-2 rounded-lg transition duration-300 ${
+              usersLoading
+                ? "bg-blue-300 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600 text-white"
+            }`}
+            disabled={usersLoading}
           >
-            Login
+            {usersLoading ? "Logging in..." : "Login"}
           </button>
         </form>
-
-        {/* Additional Links */}
-        <div className="mt-4 text-center">
-          <p className="text-gray-600">
-            Don't have an account?{" "}
-            <a href="/register" className="text-blue-500 hover:underline">
-              Sign Up
-            </a>
-          </p>
-          <p className="text-gray-600 mt-2">
-            Forgot password?{" "}
-            <a href="/reset" className="text-blue-500 hover:underline">
-              Reset here
-            </a>
-          </p>
-        </div>
       </div>
     </div>
   );
 };
 
 export default Login;
+
