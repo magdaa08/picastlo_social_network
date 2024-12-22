@@ -20,22 +20,18 @@ class PipelineService(
         return userClient.getUserByUsername(username)
     }
 
-    @CanReadOneResource
     fun getPipelineById(id: Long): Pipeline {
         return pipelineRepository.findById(id).orElseThrow { Exception("Pipeline not found") }
     }
 
-    @CanCreateResources
     fun createPipeline(pipeline: Pipeline): Pipeline {
         return pipelineRepository.save(pipeline)
     }
 
-    @CanReadAllResources
     fun getPipelinesByOwner(ownerId: Long): List<Pipeline> {
         return pipelineRepository.findByOwnerId(ownerId)
     }
 
-    @CanCreateResources
     fun updatePipeline(id: Long, updatedPipeline: Pipeline): Pipeline {
         val existingPipeline = getPipelineById(id)
         return pipelineRepository.save(existingPipeline.copy(
@@ -46,7 +42,6 @@ class PipelineService(
         ))
     }
 
-    @CanCreateResources
     fun deletePipeline(id: Long) {
         pipelineRepository.deleteById(id)
     }

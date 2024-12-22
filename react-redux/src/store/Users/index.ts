@@ -57,13 +57,11 @@ export const login =
     try {
       const response = await axios.post("/users/login", { username, password });
       if (response.status === 200) {
-        const tempUser = { username: username };
+        dispatch(fetchUserByUsername(username));
         dispatch(setAuthenticated(true));
-        dispatch(setCurrentUser(tempUser));
       } else {
         throw new Error("Login failed.");
       }
-    
     } catch (error: any) {
       dispatch(setError(error.response?.data?.message || "Login failed."));
       dispatch(setAuthenticated(false));
@@ -81,6 +79,20 @@ export const fetchUsers =
       dispatch(setUsers(response.data));
     } catch (error: any) {
       dispatch(setError(error.message || "Failed to fetch users."));
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
+export const fetchUserByUsername =
+  (username: string): ThunkAction<void, GlobalState, unknown, AnyAction> =>
+  async (dispatch) => {
+    dispatch(setLoading(true));
+    try {
+      const response = await axios.get(`/users/${username}`);
+      dispatch(setCurrentUser(response.data));
+    } catch (error: any) {
+      dispatch(setError(error.response?.data?.message || "Failed to fetch user details."));
     } finally {
       dispatch(setLoading(false));
     }

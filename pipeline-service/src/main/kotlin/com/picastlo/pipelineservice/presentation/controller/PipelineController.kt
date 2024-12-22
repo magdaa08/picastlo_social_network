@@ -10,17 +10,17 @@ import java.security.Principal
 class PipelineController(private val pipelineService: PipelineService) {
 
     @GetMapping("/{id}")
-    fun getPipelineById(@PathVariable id: Long, principal: Principal): Pipeline {
+    fun getPipelineById(@PathVariable id: Long): Pipeline {
         return pipelineService.getPipelineById(id)
     }
 
     @PostMapping
-    fun createPipeline(@RequestBody pipeline: Pipeline, principal: Principal): Pipeline {
+    fun createPipeline(@RequestBody pipeline: Pipeline): Pipeline {
         return pipelineService.createPipeline(pipeline)
     }
 
     @GetMapping("/owner/{username}")
-    fun getPipelinesByUsername(@PathVariable username: String, principal: Principal): List<Pipeline> {
+    fun getPipelinesByUsername(@PathVariable username: String): List<Pipeline> {
         val userDTO = pipelineService.getUserDetails(username)
         val pipelines = pipelineService.getPipelinesByOwner(userDTO.id)
 
@@ -28,12 +28,12 @@ class PipelineController(private val pipelineService: PipelineService) {
     }
 
     @PutMapping("/{id}")
-    fun updatePipeline(@PathVariable id: Long, @RequestBody updatedPipeline: Pipeline, principal: Principal): Pipeline {
+    fun updatePipeline(@PathVariable id: Long, @RequestBody updatedPipeline: Pipeline): Pipeline {
         return pipelineService.updatePipeline(id, updatedPipeline)
     }
 
     @DeleteMapping("/{id}")
-    fun deletePipeline(@PathVariable id: Long, principal: Principal) {
+    fun deletePipeline(@PathVariable id: Long) {
         return pipelineService.deletePipeline(id)
     }
 

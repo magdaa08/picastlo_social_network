@@ -25,4 +25,12 @@ interface PostAPI {
     @CanReadAllResources
     @GetMapping("/{username}")
     fun getPostsByUsername(@PathVariable username: String, principal: Principal): List<Post>
+
+    @CanReadAllResources
+    @GetMapping("/all/{id}")
+    fun getPostsByUserId(@PathVariable id: Long, principal: Principal): List<Post>
+
+    @CanCreateResources
+    @PutMapping("/{id}")
+    fun updatePost(@PathVariable id: Long, @RequestBody updatedPost: Post): Post
 }

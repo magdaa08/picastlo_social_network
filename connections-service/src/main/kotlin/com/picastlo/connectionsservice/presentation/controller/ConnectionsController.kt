@@ -19,7 +19,6 @@ class ConnectionsController(private val friendshipService: FriendshipService, pr
         val friendships = mutableListOf<FriendshipDTO>()
         val friends = friendshipService.getFriends(userDTO.id)
         for (friend in friends) {
-            System.out.println(friend)
             friendships.add(FriendshipDTO(friend.userId1, friend.userId2))
         }
         System.out.println(request.requestURL.toString())
@@ -38,7 +37,6 @@ class ConnectionsController(private val friendshipService: FriendshipService, pr
     @GetMapping("/groups/{groupName}/members")
     fun getGroupMembers(@PathVariable groupName: String): List<UserDTO> {
         val group = groupService.getGroupByName(groupName)
-        System.out.println("THIS")
         val groupMembers = groupService.getGroupMembers(group.id)
         return groupMembers
     }

@@ -31,28 +31,6 @@ class capabilitiesService {
                 operationAll != null && lessOrEqual(Operation.READ, operationAll)
     }
 
-    // In a post authorize
-    // TODO: test this
-    fun canReadMultipleTrap(user: Principal, resources: List<Pipeline>): Boolean {
-        val capabilities = (user as UserAuthToken).capabilities
-        resources.forEach {
-            val operation = capabilities.get(it.id)
-            if (operation == null || !lessOrEqual(Operation.READ, operation))
-                return false
-        }
-        return true
-    }
-
-    // In a post filter
-    // TODO: complete and test this
-    fun canReadMultipleFilter(user: Principal, resources: List<Pipeline>): List<Pipeline> {
-        val capabilities = (user as UserAuthToken).capabilities
-        return resources.map {
-            val operation = capabilities.get(it.id)
-            if (operation != null && lessOrEqual(Operation.READ, operation)) it else null
-        }.mapNotNull { it }
-    }
-
     private fun lessOrEqual(op1: Operation, op2: Operation): Boolean {
         return op1 == op2 ||
                 op1 == Operation.NONE ||

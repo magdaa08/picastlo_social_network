@@ -35,10 +35,8 @@ class PostController(
         println(userDTO)
         val posts = mutableListOf<Post>()
         posts.addAll(postRepository.findAllByVisibility("PUBLIC"))
-        posts.addAll(postRepository.findByUserId(userDTO.id))
 
         val friends = connectionsClient.getFriendsByUsername(userDTO.username)
-        println("friends $friends")
         for (friend in friends) {
             if (userDTO.id == friend.id1)
             {
@@ -77,5 +75,20 @@ class PostController(
         }
         println(posts.size)
         return posts
+    }
+
+    override fun updatePost(@PathVariable id: Long, @RequestBody updatedPost: Post): Post {
+        val existingPost = postRepository.findById(id).get()
+        return postRepository.save(existingPost.copy(
+            image = updatedPost.image,
+            text = updatedPost.text,
+            pipelineId = updatedPost.pipelineId,
+            visibility = updatedPost.visibility,
+            userId = updatedPost.userId
+        ))
+    }
+
+    override fun getPostsByUserId(@PathVariable id: Long, principal: Principal): List<Post> {
+        return postRepository.findByUserId(id)
     }
 }
