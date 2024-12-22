@@ -18,18 +18,22 @@ class UserController(private val userRepository: UserRepository) : UserAPI {
 
     override fun getUserByUsername(@PathVariable username: String, request: HttpServletRequest): UserDTO? {
         val user = userRepository.findByUsername(username)
-        return user.id?.let { UserDTO(it, user.username, user.passwordHash) }
+        return user?.id?.let { UserDTO(it, user.username, user.passwordHash) }
     }
 
-    override fun getUserByID(id: Long): UserDTO? {
-        val user = userRepository.findById(id).get()
-        return user.id?.let { UserDTO(it, user.username, user.passwordHash) }
+    override fun getUserByID(@PathVariable id: Long): UserDTO? {
+        val user = userRepository.findById(id)
+        return if (user.isPresent) {
+            user.get().id?.let { UserDTO(it, user.get().username, user.get().passwordHash) }
+        } else {
+            throw org.springframework.web.server.ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
+        }
     }
 
     override fun getCurrentUser(): UserDTO? {
         val username = SecurityContextHolder.getContext().authentication.details.toString()
         val user = userRepository.findByUsername(username)
-        return user.id?.let { UserDTO(it, user.username, user.passwordHash) }
+        return user?.id?.let { UserDTO(it, user.username, user.passwordHash) }
     }
 
     override fun getAllUsers(): List<UserDTO> {

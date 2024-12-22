@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 interface ProfileAPI {
 
     @CanReadResources
-    @GetMapping("/{id}")
+    @GetMapping("profile/{id}")
     fun getProfileByUserID(@PathVariable id: Long): ProfileDTO?
 
     @CanReadResources

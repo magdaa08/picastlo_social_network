@@ -54,6 +54,9 @@ class PostServiceApplicationTests {
 
     private val objectMapper = ObjectMapper()
 
+    @Autowired
+    private lateinit var jwtUtils: JWTUtils
+
     @Test
     fun contextLoads() {
     }
@@ -87,5 +90,31 @@ class PostServiceApplicationTests {
                 .content(objectMapper.writeValueAsString(userLogin))
         )
             .andExpect(status().isOk)
+    }
+
+    @Test
+    fun `test successful`() {
+
+        val userLogin = UserLogin("john_doe", "Password@123")
+
+        val username = "john_doe"
+
+        mockMvc.perform(
+            post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(userLogin))
+        )
+            .andExpect(status().isOk)
+
+        if (jwtUtils.token != null)
+        {
+            mockMvc
+                .perform(get("/posts/$username"))
+                .andExpect(status().isOk)
+        } else {
+            mockMvc
+                .perform(get("/posts/$username"))
+                .andExpect(status().isForbidden)
+        }
     }
 }

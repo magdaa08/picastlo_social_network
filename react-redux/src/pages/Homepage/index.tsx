@@ -1,23 +1,30 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GlobalState, AppDispatch } from "../../store";
-import { fetchPublicFeed } from "../../store/Posts";
+import { fetchPublicFeed, fetchPostsByUsername } from "../../store/Posts";
 import { Link } from "react-router-dom";
 
 export const Homepage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { posts, postsLoading } = useSelector((state: GlobalState) => state.posts);
-  const { users, usersLoading } = useSelector((state: GlobalState) => state.users);
+  const { users, usersLoading, isAuthenticated, currentUser } = useSelector(
+    (state: GlobalState) => state.users
+  );
 
   useEffect(() => {
-    dispatch(fetchPublicFeed());
-  }, [dispatch]);
+    if (isAuthenticated && currentUser?.username) {
+      // Fetch user-specific posts
+      dispatch(fetchPostsByUsername(currentUser.username));
+    } else {
+      // Fetch public feed
+      dispatch(fetchPublicFeed());
+    }
+  }, [dispatch, isAuthenticated, currentUser]);
 
   const getUsername = (userId: string) => {
     const user = users.find((user: any) => user.id === userId);
     return user ? user.username : "Anonymous User";
   };
-  
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -39,24 +46,40 @@ export const Homepage = () => {
           </h1>
         </div>
 
-        {/* Right side - Login button */}
-        <div className="flex-shrink-0">
-          <Link to="/login">
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-              Login
-            </button>
-          </Link>
+        {/* Right side - User Profile and Logout/Login */}
+        <div className="flex items-center space-x-4 flex-shrink-0">
+          {isAuthenticated ? (
+            <>
+              <span className="text-gray-700 font-semibold">
+                {currentUser?.username || "User"}
+              </span>
+              <button
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+                onClick={() => {
+                  // Add logout functionality here
+                  console.log("Logged out");
+                }}
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link to="/login">
+              <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                Login
+              </button>
+            </Link>
+          )}
         </div>
-
       </div>
 
-      {postsLoading && usersLoading && <p className="text-center text-gray-500">Loading posts...</p>}
+      {postsLoading && <p className="text-center text-gray-500">Loading posts...</p>}
 
-      {!postsLoading && !usersLoading && posts.length === 0 && (
+      {!postsLoading && posts.length === 0 && (
         <p className="text-center text-gray-500">No posts available.</p>
       )}
 
-      {!postsLoading && !usersLoading && posts.length > 0 && (
+      {!postsLoading && posts.length > 0 && (
         <div className="space-y-4 flex flex-col items-center">
           {posts.map((post, index) => (
             <div

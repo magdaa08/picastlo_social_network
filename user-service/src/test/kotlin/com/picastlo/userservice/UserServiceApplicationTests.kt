@@ -85,6 +85,7 @@ class ServiceApplicationTests {
                 .content(objectMapper.writeValueAsString(userLogin))
         )
             .andExpect(status().isOk)
+            .andExpect{ System.out.println(it.response.contentAsString) }
 
         if (jwtUtils.token != null)
         {

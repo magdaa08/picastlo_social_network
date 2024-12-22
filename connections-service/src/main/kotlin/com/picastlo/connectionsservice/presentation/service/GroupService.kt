@@ -30,6 +30,8 @@ class GroupService(
         val memberships = groupMembershipRepository.findByUserId(id)
         val users = ArrayList<UserDTO>()
 
+        System.out.println("HII")
+
         for (user in memberships){
             user.userId?.let { userClient.getUserByID(it) }?.let { users.add(it) }
         }

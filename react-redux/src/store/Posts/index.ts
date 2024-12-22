@@ -35,6 +35,20 @@ const postSlice = createSlice({
 
 const { setPosts, setLoading, setError } = postSlice.actions;
 
+export const fetchPostsByUsername =
+  (username: string): ThunkAction<void, GlobalState, unknown, AnyAction> =>
+  async (dispatch) => {
+    dispatch(setLoading(true));
+    try {
+      const response = await axios.get(`/posts/${username}`);
+      dispatch(setPosts(response.data));
+    } catch (error: any) {
+      dispatch(setError(error.response?.data?.message || "Failed to fetch posts."));
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
 export const fetchPublicFeed =
   (): ThunkAction<void, GlobalState, unknown, AnyAction> =>
   async (dispatch) => {
@@ -50,3 +64,4 @@ export const fetchPublicFeed =
   };
 
 export default postSlice.reducer;
+

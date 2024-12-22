@@ -3,6 +3,7 @@ import { ThunkAction } from "@reduxjs/toolkit";
 import { AnyAction } from "redux";
 import axios from "axios";
 import { GlobalState } from "../index";
+import { Console } from "console";
 
 export interface UserState {
   users: any[];
@@ -55,8 +56,14 @@ export const login =
     dispatch(setLoading(true));
     try {
       const response = await axios.post("/users/login", { username, password });
-      dispatch(setAuthenticated(true));
-      dispatch(setCurrentUser(response.data));
+      if (response.status === 200) {
+        const tempUser = { username: username };
+        dispatch(setAuthenticated(true));
+        dispatch(setCurrentUser(tempUser));
+      } else {
+        throw new Error("Login failed.");
+      }
+    
     } catch (error: any) {
       dispatch(setError(error.response?.data?.message || "Login failed."));
       dispatch(setAuthenticated(false));

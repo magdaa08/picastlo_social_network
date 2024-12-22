@@ -34,7 +34,7 @@ class PostController(
         val userDTO = userClient.getUserByUsername(username)
         println(userDTO)
         val posts = mutableListOf<Post>()
-        println("size " + posts.size)
+        posts.addAll(postRepository.findAllByVisibility("PUBLIC"))
         posts.addAll(postRepository.findByUserId(userDTO.id))
 
         val friends = connectionsClient.getFriendsByUsername(userDTO.username)

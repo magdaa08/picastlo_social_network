@@ -38,6 +38,7 @@ class ConnectionsController(private val friendshipService: FriendshipService, pr
     @GetMapping("/groups/{groupName}/members")
     fun getGroupMembers(@PathVariable groupName: String): List<UserDTO> {
         val group = groupService.getGroupByName(groupName)
+        System.out.println("THIS")
         val groupMembers = groupService.getGroupMembers(group.id)
         return groupMembers
     }
