@@ -3,35 +3,22 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { GlobalState, AppDispatch } from "../../store";
 import { fetchUsers } from "../../store/Users";
-import axios from "axios";
+import { fetchProfiles } from "../../store/Profiles";
 
 const UserProfile = () => {
 
-    const [profiles, setProfiles] = useState<any[] | null>(null);
-    const [profLoading, setProfLoading] = useState<boolean>(true);
+    const { profiles, profilesLoading } = useSelector((state: GlobalState) => state.profiles);
     const [userProfile, setUserProfile] = useState<any | null>(null);
-
-    // once we have the new generated api, this will change
-    useEffect(() => {
-      const fetchProfiles = async () => {
-        try {
-          const response = await axios.get("http://localhost:8080/users/profiles");
-          console.log("Profiles fetched: ", response.data);
-          setProfiles(response.data);
-          setProfLoading(false); 
-        } catch (err) {
-          
-        }
-      };
-  
-      fetchProfiles();
-    }, []);
 
     const { userId } = useParams<{ userId: string }>(); // Get userId from URL params
     const dispatch = useDispatch<AppDispatch>();
     const { users, usersLoading } = useSelector((state: GlobalState) => state.users);
   
     const [user, setUser] = useState<any | null>(null);
+
+    useEffect(() => {
+      dispatch(fetchProfiles());
+    }, [dispatch]);
   
     useEffect(() => {
         if (users.length === 0 && !usersLoading) {
@@ -56,7 +43,7 @@ const UserProfile = () => {
         }
       }, [userId, users, usersLoading, profiles]);
     
-      if (usersLoading || profLoading) {
+      if (usersLoading || profilesLoading) {
         return <p className="text-center text-gray-500">Loading user profile...</p>;
       }
     
